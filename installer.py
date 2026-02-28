@@ -24,7 +24,7 @@ PACKAGE_FILES = [
     "types.py"
 ]
 
-os.makedirs("ballsdex/packages/collectible", exist_ok=True)
+os.makedirs("ballsdex/packages/battle", exist_ok=True)
 
 async def fetch_github_file(session: aiohttp.ClientSession, url: str):
     async with session.get(url) as resp:
