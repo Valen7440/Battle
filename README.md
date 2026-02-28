@@ -1,7 +1,7 @@
 # BallsDex Battle Package
 A battle system based in the actual BallsDex battle system. Credits for [BallsDex-Team](https://github.com/BallsDex-Team) for original idea!
 
-# [!NOTE]
+> [!NOTE]
 > This package is only compatible with BallsDex 2.29.3 and above.
 
 
