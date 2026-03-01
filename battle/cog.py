@@ -1,3 +1,4 @@
+import asyncio
 from collections import defaultdict
 from io import BytesIO
 import random
@@ -398,7 +399,7 @@ class Battle(commands.GroupCog):
         await source.start(content="Select a user to view their proposal.")
 
     async def _start_quick_match(
-        self, 
+        self,
         interaction: discord.Interaction["BallsDexBot"], 
         user1: discord.User | discord.Member, 
         user2: discord.User | discord.Member,
@@ -410,6 +411,7 @@ class Battle(commands.GroupCog):
         user2_health = 100
         text = f"{user1.name} VS. {user2.name} - Quick Match info:\n"
         turn = 1
+        channel = cast(discord.TextChannel, interaction.channel)
 
         while user1_health > 0 and user2_health > 0:
             user, enemy = (
@@ -417,7 +419,13 @@ class Battle(commands.GroupCog):
                 if random.randint(0, 1) == 0
                 else (user2, user1)
             )
+            if turn == 1:
+                await channel.send(f"Starting with quick match! {user.mention} will start.")
+            else:
+                await channel.send(f"Round #{turn}: turn of {user.mention}")
+            await asyncio.sleep(3)
             damage = random.randint(1, 15)
+
 
             if enemy.id == user1.id:
                 user1_health -= damage
@@ -428,10 +436,16 @@ class Battle(commands.GroupCog):
 
             if remaining <= 0:
                 text += f"Turn {turn}: {user.name} has killed {enemy.name}\n"
+                await channel.send(f"{user.name} has killed {enemy.name}!")
             else:
                 text += f"Turn {turn}: {user.name} has dealt {damage} to {enemy.name}\n"
+                await channel.send(
+                    f"{user.name} has dealt **{damage}** damage to {enemy.name}.\n"
+                    f"{enemy.name} health: {user1_health if enemy.id == user1.id else user2_health}/100"
+                )
             
             turn += 1
+            await asyncio.sleep(5)
         
         winner = user1 if user1_health > 0 else user2
         file = discord.File(BytesIO(text.encode("utf-8")), filename="quick-match.txt")

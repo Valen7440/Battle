@@ -380,6 +380,15 @@ class BattleMenu:
         while len(self.battler1.proposal) > 0 and len(self.battler2.proposal) > 0:
             player = random.choice([self.battler1, self.battler2])
             enemy = self.battler2 if player.user.id == self.battler2.user.id else self.battler1
+            if turn == 1:
+                await self.message.channel.send(
+                    f"Starting with the battle! {player.user.mention} will start."
+                )
+            else:
+                await self.message.channel.send(
+                    f"Round #{turn}: turn of {player.user.mention}."
+                )
+            await asyncio.sleep(3)
 
             ball = random.choice(player.proposal)
             target = random.choice(enemy.proposal)
@@ -387,17 +396,32 @@ class BattleMenu:
             dealt = random.randint(1, ball.attack)
             target.health -= dealt
             if target.health <= 0:
+                enemy.proposal.remove(target)
+                proposal_size = len(enemy.proposal)
+                grammar = settings.collectible_name if proposal_size == 1 else settings.plural_collectible_name
                 text += (
                     f"Turn {turn}: {player.user.name}'s {ball.instance.countryball.country} has killed "
                     f"{enemy.user.name}'s {target.instance.countryball.country}\n"
                 )
-                enemy.proposal.remove(target)
+                await self.message.channel.send(
+                    f"{player.user.name}'s {ball.instance.countryball.country} has killed "
+                    f"{enemy.user.name}'s {target.instance.countryball.country}!\n"
+                    f"{enemy.user.name} now has **{proposal_size}.** {grammar}"
+                )
             else:
+                proposal_size = len(enemy.proposal)
+                grammar = settings.collectible_name if proposal_size == 1 else settings.plural_collectible_name
                 text += (
                     f"Turn {turn}: {player.user.name}'s {ball.instance.countryball.country} has dealt {dealt} "
                     f"to {enemy.user.name}'s {target.instance.countryball.country}\n"
                 )
+                await self.message.channel.send(
+                    f"{player.user.name}'s {ball.instance.countryball.country} has dealt **{dealt}** "
+                    f"damage to {enemy.user.name}'s {target.instance.countryball.country}.\n"
+                    f"{target.instance.countryball.country} now has **{target.health}** HP."
+                )
             turn += 1
+            await asyncio.sleep(5)
         
         winner = self.battler1 if len(self.battler2.proposal) == 0 else self.battler2
         embed = discord.Embed(
