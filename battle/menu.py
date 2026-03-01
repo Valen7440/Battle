@@ -379,7 +379,7 @@ class BattleMenu:
         battler2_copy = self.battler2.copy()
         while len(self.battler1.proposal) > 0 and len(self.battler2.proposal) > 0:
             player = random.choice([self.battler1, self.battler2])
-            enemy = self.battler2 if player.user.id == self.battler2.user.id else self.battler1
+            enemy = self.battler2 if player.user.id == self.battler1.user.id else self.battler1
             if turn == 1:
                 await self.message.channel.send(
                     f"Starting with the battle! {player.user.mention} will start."
